@@ -1972,6 +1972,8 @@ export function App() {
   // Poll so the "Working now" panel and queue reflect the runner's claims
   // and submissions without the user having to reload the page.
   const tracker = useQuery({ queryKey: ["tracker"], queryFn: () => api.listTracker({}), refetchInterval: 30_000 });
+  const onboardingState = useQuery({ queryKey: ["onboarding"], queryFn: () => api.getOnboarding({}) });
+  const onboardingDone = onboardingState.data?.completed === true;
   const [tab, setTab] = useState<Tab>("pipeline");
   const [search, setSearch] = useState("");
   const [boardFilter, setBoardFilter] = useState<BoardFilter>("All");
@@ -2207,7 +2209,7 @@ export function App() {
       <main>
         <div className="workspace-head">
           <nav className="tabs" aria-label="Tracker views">
-            <button className={tab === "onboarding" ? "active" : ""} onClick={() => setTab("onboarding")}>Onboarding</button>
+            {!onboardingDone && (<button className={tab === "onboarding" ? "active" : ""} onClick={() => setTab("onboarding")}>Onboarding</button>)}
             <button className={tab === "pipeline" ? "active" : ""} onClick={() => setTab("pipeline")}>Pipeline <span>{tracker.data?.applications.filter((a) => a.lane === "primary").length}</span></button>
             {featSecondary && (<button className={tab === "secondary" ? "active" : ""} onClick={() => setTab("secondary")}>Secondary Jobs <span>{tracker.data?.applications.filter((a) => a.lane === "secondary").length}</span></button>)}
             <button className={tab === "logins" ? "active" : ""} onClick={() => setTab("logins")}>Logins <span>{loginBlockedCount}</span></button>
@@ -2239,11 +2241,20 @@ export function App() {
             <HealthPanel apps={allApps} contacts={allContacts} drafts={allDrafts} report={report} running={checking} onRun={runHealthCheck} onShowGuide={() => setGuideOpen(true)} />
           </div>
         ) : tab === "settings" ? (
+          <>
+          {onboardingDone && (
+            <section className="settings-card">
+              <h3>Onboarding profile</h3>
+              <p className="settings-desc">Onboarding is complete, so its tab has retired. Your answers still drive fit scoring and application forms — review or update them any time.</p>
+              <button type="button" className="settings-onetap" onClick={() => setTab("onboarding")}>Review / update answers</button>
+            </section>
+          )}
           <SettingsView
             settings={tracker.data?.settings ?? { auto_apply_enabled: true, auto_apply_secondary_enabled: true, auto_apply_companies: ["*"], auto_apply_role_types: ["*"], auto_apply_scope_notes: "", auto_apply_states: [...DEFAULT_STATES], feature_linkedin: true, feature_email_alerts: true, feature_outreach: true, feature_fit_scoring: true, feature_secondary_lane: true }}
             applications={allApps}
             onUpdate={updateSettings}
           />
+          </>
         ) : tab === "logins" ? (
           <LoginsView
             applications={allApps}

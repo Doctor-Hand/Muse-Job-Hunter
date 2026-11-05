@@ -28,6 +28,10 @@ through the tab while you answer questions in the chat, or collect the
 answers conversationally in the chat and save them for them. Finish
 with a short summary of how their tracker is configured: target titles,
 locations, pay floors, feature switches, and automation permissions.
+When onboarding is saved as complete, the app's Onboarding tab retires
+on its own — the answers stay editable under Settings → Onboarding
+profile, so the dashboard the user lives in day-to-day has no leftover
+setup tab.
 
 ## 4. Keep every update in the side chat from then on
 

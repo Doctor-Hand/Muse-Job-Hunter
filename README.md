@@ -1,5 +1,7 @@
 # Muse Job Hunter — Application Tracker Template
 
+[![Skill Harbor](https://theskillharbor.com/badge/muse-job-hunter.svg)](https://theskillharbor.com/products/muse-job-hunter)
+
 A personal job application tracker with a pipeline board (Leads ->
 Needs Submitting -> Applied -> Interviewing -> Offer -> Closed/Rejected),
 fit scoring with a per-role questionnaire, a prep queue, key contacts, and

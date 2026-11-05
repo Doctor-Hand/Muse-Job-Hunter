@@ -33,6 +33,16 @@ on its own — the answers stay editable under Settings → Onboarding
 profile, so the dashboard the user lives in day-to-day has no leftover
 setup tab.
 
+## 4. Set the learning-period expectation
+
+Tell the user plainly: this takes time to get working properly. Early
+on you will stop and ask them a lot of questions — every application
+form asks things you don't know about them yet. Each answer becomes a
+standing answer, so you ask less over time, and once you know their
+answers you can apply end-to-end on your own within the gates they
+set. It works best on applications that reuse the standard questions;
+unusual one-off forms will still need them.
+
 ## 4. Keep every update in the side chat from then on
 
 All tracker traffic belongs in the side chat: new leads, application

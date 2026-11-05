@@ -1847,7 +1847,7 @@ function SettingsView({ settings, applications, onUpdate }: {
         <div className="settings-card-head">
           <div>
             <p className="settings-title">Automatic applications</p>
-            <p className="settings-desc">{settings.auto_apply_enabled ? "On — your assistant submits roles that pass the scope below and records the employer's confirmation on the card. Parked steps (account creation, consent, EEO answers you haven't provided) still stop for you." : "Off — paused. your assistant will prep and park applications but won't submit anything until you turn this back on."}</p>
+            <p className="settings-desc">{settings.auto_apply_enabled ? "On — your assistant submits roles that pass the scope below and records the employer's confirmation on the card. Parked steps (account creation, consent, EEO answers you haven't provided) still stop for you. Expect a learning period: at first your assistant stops and asks about form questions it has not seen yet — every answer becomes a standing answer, it asks less over time, and it works best on applications that reuse the standard questions." : "Off — paused. your assistant will prep and park applications but won't submit anything until you turn this back on."}</p>
           </div>
           <button type="button" role="switch" aria-checked={settings.auto_apply_enabled} aria-label="Automatic applications" className={`toggle-switch ${settings.auto_apply_enabled ? "toggle-on" : ""}`} onClick={() => onUpdate({ auto_apply_enabled: !settings.auto_apply_enabled })}>
             <span className="toggle-knob" />

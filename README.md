@@ -76,6 +76,11 @@ This source is a Muse web artifact (a TypeScript space). It depends on
 `@hatch/space-sdk`, which the Muse artifact runtime provides, so it is
 not a standalone app you can `bun run` anywhere — yet.
 
+**Setting this up with your Muse?** Point it at
+[SETUP.md](SETUP.md) first — it tells your Muse to build the app,
+create the tracker's own side chat, run the onboarding in that chat,
+and keep every tracker update there from then on.
+
 **Does downloading this create the dashboard for you?** Not by itself —
 the repo is source code. Give the repo link to your own Muse and ask it
 to build this as your job tracker: Muse creates the app in your

@@ -1,4 +1,4 @@
-# Application Tracker — Template
+# Muse Job Hunter — Application Tracker Template
 
 A personal job application tracker with a pipeline board (Leads ->
 Needs Submitting -> Applied -> Interviewing -> Offer -> Closed/Rejected),
@@ -9,6 +9,19 @@ a draft-only outreach workspace.
 message on your behalf. Outreach drafts need your exact-text approval, then
 you copy the text into LinkedIn, email, or text yourself and mark the draft
 sent. Editing an approved draft sends it back to unapproved.
+
+## Disclaimer
+
+This template is provided **as-is, for your own use, at your own risk** —
+see the MIT license in [LICENSE](LICENSE) for the legal version. The
+author is not responsible for anything that happens from using it:
+missed deadlines, incorrect or incomplete applications, employment
+outcomes, account restrictions or flags from any automated activity,
+lost data, or any other loss. Automation in this template acts only
+within the permissions *you* set in its settings; always review an
+application before it goes out, and follow the terms of the job boards
+and employers you apply through. Nothing here is career, legal, or
+financial advice.
 
 ## Start here: the onboarding questionnaire
 
@@ -54,14 +67,22 @@ Full questionnaire: [ONBOARDING.md](ONBOARDING.md)
 
 - No database file, no build output, no `node_modules`
 - No real applications, contacts, names, phone numbers, resume data, or
-  links from anyone's real tracker — this template was sanitized and
-  grep-verified before publishing
+  links from anyone's real tracker — this template was sanitized
+  before publishing
 
 ## How to use it
 
 This source is a Muse web artifact (a TypeScript space). It depends on
 `@hatch/space-sdk`, which the Muse artifact runtime provides, so it is
 not a standalone app you can `bun run` anywhere — yet.
+
+**Does downloading this create the dashboard for you?** Not by itself —
+the repo is source code. Give the repo link to your own Muse and ask it
+to build this as your job tracker: Muse creates the app in your
+Library with the full dashboard (pipeline board, fit scoring, outreach
+drafts, settings), starting empty, and the onboarding below shapes it
+around your search. If you don't use Muse, a developer can adapt the
+client/server code to another stack.
 
 1. In Muse, create a new web artifact (fullstack) and bring this source
    in as the starting point — or adapt the client/server code to your

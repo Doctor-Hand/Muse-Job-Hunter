@@ -1862,6 +1862,15 @@ function SettingsView({ settings, applications, onUpdate }: {
       <div className="settings-card">
         <div className="settings-card-head">
           <div>
+            <p className="settings-title">Finish your setup — the operating rhythm</p>
+            <p className="settings-desc">The dashboard is step one. To make it run itself — lead sweeps three times a day, the application runner working the queue every 15 minutes, a daily health check, a nightly debrief, and a weekly check-in — say this in your Job Hunter chat: "Read OPERATIONS.md from the Muse-Job-Hunter repo and set up the operating rhythm." Your assistant creates the jobs from your onboarding settings and confirms what is running.</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="settings-card">
+        <div className="settings-card-head">
+          <div>
             <p className="settings-title">Secondary-lane job applications</p>
             <p className="settings-desc">{settings.auto_apply_secondary_enabled ? "On — secondary-lane jobs (the secondary board) are queued and submitted under the same scope below, alongside primary-lane roles." : "Off — secondary-lane applications are paused on their own. Queued secondary-lane cards are skipped and left exactly as they are — never blocked, never submitted — while primary-lane applications continue normally. Turn it back on and the queued secondary cards resume."}</p>
           </div>

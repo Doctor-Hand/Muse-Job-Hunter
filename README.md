@@ -104,6 +104,24 @@ Using this as a template: on GitHub, use **Use this template** (or fork)
 so your copy gets your data — never commit your real database, resume,
 or contacts back to a public repo.
 
+## The operating rhythm (current version)
+
+Building the dashboard is step one. This version also ships the
+operating rhythm that runs it day to day — see
+[OPERATIONS.md](OPERATIONS.md): lead sweeps three times a day, an
+application runner that works the queue every 15 minutes, a daily
+health check, a nightly debrief, and a weekly check-in, all driven by
+your onboarding settings and the template's standing rules (park
+instead of guessing, standing answers, draft-only outreach).
+
+To switch it on, say this in your **Job Hunter** chat:
+
+> Read OPERATIONS.md and set up the operating rhythm.
+
+Your Muse creates the scheduled jobs from your settings and confirms
+which jobs are running and when. Nothing runs until you say that —
+the dashboard on its own is fully usable without it.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).

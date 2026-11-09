@@ -846,49 +846,16 @@ export const Actions = {
   }),
 
   /**
-   * Auto-queue every eligible lead — the standing expectation is that leads are
-   * queued automatically and worked one by one — he should never have to
-   * queue them by hand, and the queue should never sit empty while
-   * queueable leads exist. A lead is eligible when it is still in Leads,
-   * has never been queued (prep_status "none"), carries a posting link
-   * (employer or source), its posting is not marked dead, it is not parked
-   * (blocked is a separate status, never touched here), and it is not
-   * location-excluded. Respects the auto-apply master switch and the
-   * secondary-lane toggle, mirroring listPrepQueue. The client calls this
-   * once when the tracker loads; the runner then claims the queue in
-   * apply order via listPrepQueue. Idempotent: already-queued leads are
-   * not re-stamped.
+   * BULK QUEUE REMOVED: the old queueEligibleLeads action stamped EVERY
+   * eligible lead "requested" in a single call. It could fire accidentally
+   * and sweep in cards that must never be queued sight-unseen — a
+   * held-back lead, an agency page — because it never read their notes.
+   * The action no longer exists, so nothing (not the tracker UI, not any
+   * automation) can bulk-queue the board again. Queuing stays one card at
+   * a time via requestPrep, which is how the runner works through every
+   * eligible application in apply order (listPrepQueue) until the
+   * pipeline is empty.
    */
-  queueEligibleLeads: defineAction({
-    request: z.object({}),
-    response: z.object({ ok: z.literal(true), queued: z.number(), queued_ids: z.array(z.number()) }),
-    async handler(ctx): Promise<{ ok: true; queued: number; queued_ids: number[] }> {
-      const db = ctx.db<typeof schema>();
-      const [apps, settingsRows] = await Promise.all([
-        db.select().from(schema.applications).orderBy(asc(schema.applications.id)),
-        db.select().from(schema.trackerSettings),
-      ]);
-      const settings = settingsRows.find((row) => row.id === 1);
-      const autoApplyOn = settings ? settings.autoApply === 1 : true;
-      const secondaryEnabled = settings ? settings.autoApplySecondary === 1 : true;
-      if (!autoApplyOn) return { ok: true as const, queued: 0, queued_ids: [] };
-      const now = new Date();
-      const queuedIds: number[] = [];
-      for (const row of apps) {
-        if (row.stage !== "Leads" || row.prepStatus !== "none") continue;
-        if (!secondaryEnabled && row.lane === "secondary") continue;
-        if (row.linkStatus === "dead") continue;
-        if (!row.sourceUrl.trim() && !(row.employerUrl ?? "").trim()) continue;
-        if (parseTags(row.tags).map((t) => t.toLowerCase()).includes("location-excluded")) continue;
-        await db.update(schema.applications).set({
-          prepStatus: "requested", prepRequestedAt: now, prepUpdatedAt: now, prepNotes: "", updatedAt: now,
-        }).where(eq(schema.applications.id, row.id));
-        queuedIds.push(row.id);
-      }
-      if (queuedIds.length > 0) ctx.invalidateQueries();
-      return { ok: true as const, queued: queuedIds.length, queued_ids: queuedIds };
-    },
-  }),
 
   resetPrep: defineAction({
     request: z.object({ id: z.number().int().positive() }),

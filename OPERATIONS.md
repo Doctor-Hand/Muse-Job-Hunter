@@ -33,11 +33,15 @@ Morning, midday, and evening, in the user's timezone.
 
 The engine. One application per run, working the queue in order.
 
-- Take the next queued card. Queueing is your job: any Lead that
-  passes the user's gates (in-scope title, posting verified live,
-  every required answer known from the user's profile, resume, and
-  standing answers) joins the queue automatically. The user never
-  queues cards by hand.
+- Take the next queued card. Queueing is your job, ONE card at a
+  time: when the queue is empty, pick the next Lead that passes the
+  user's gates (in-scope title, posting verified live, every required
+  answer known from the user's profile, resume, and standing
+  answers), read its notes first, then queue exactly that one card
+  and work it. Never bulk-queue — there is no action that queues the
+  whole board, by design: a bulk sweep would sweep in cards the user
+  is holding back and pages that are not real applications. The user
+  never queues cards by hand.
 - Fill the application from the user's resume and standing answers.
   Verify uploads actually attached before submitting.
 - Submit only within the user's automation settings (their auto-apply

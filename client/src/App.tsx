@@ -681,16 +681,16 @@ function PrepSection({ app, onResetPrep, onEdit }: {
   }
   if (app.stage !== "Leads") return null;
   if (app.prep_status === "none") {
-    // No manual prep button: with auto-apply on, eligible leads queue
-    // themselves automatically (queueEligibleLeads runs when the tracker
-    // loads). This line is status only — what happens next.
+    // No manual prep button and no bulk auto-queue: the runner queues
+    // leads one at a time, in apply order, reading each card's notes
+    // first. This line is status only — what happens next.
     return (
       <p className="autoapply-status">
         {app.link_status === "dead"
           ? "Auto-apply: not queued — this posting is marked dead. Archiving it is your call."
           : postingUrlFor(app)
-            ? "Auto-apply: on — this lead queues itself automatically; nothing for you to tap here."
-            : "Auto-apply: waiting on a posting link — add the employer posting link and this lead queues itself automatically."}
+            ? "Auto-apply: on — waiting its turn. The runner queues leads one at a time, in apply order; nothing for you to tap here."
+            : "Auto-apply: waiting on a posting link — add the employer posting link and this lead becomes queueable on its turn."}
       </p>
     );
   }
@@ -724,7 +724,7 @@ function PrepSection({ app, onResetPrep, onEdit }: {
           <p className="prep-blocked-notes">No reason was recorded for this park — that&rsquo;s a tracking gap, not your move. Add the posting link in Edit if this card doesn&rsquo;t have one, or Dismiss if you&rsquo;ve already handled it another way.</p>
         )}
         {isDeadLead(app) && <p className="prep-blocked-notes"><strong>Your call:</strong> if the posting is really gone, move this card to Closed/Rejected to archive it — nothing archives itself.</p>}
-        {/Prep my application/i.test(app.prep_notes) && <p className="prep-blocked-notes"><strong>Updated flow:</strong> there&rsquo;s no Prep button anymore — add the posting link in Edit and this card re-queues itself automatically.</p>}
+        {/Prep my application/i.test(app.prep_notes) && <p className="prep-blocked-notes"><strong>Updated flow:</strong> there&rsquo;s no Prep button anymore — your assistant queues cards one at a time, in apply order; add the posting link in Edit and this card becomes queueable again.</p>}
         <div className="prep-queue-actions">
           <button type="button" className="prep-cancel-button" onClick={() => onResetPrep(app.id)}>Dismiss</button>
         </div>
@@ -919,7 +919,7 @@ function HealthPanel({ apps, contacts, drafts, report, running, onRun, onShowGui
     : `Fit scores: ${unscored.length} active card${unscored.length === 1 ? "" : "s"} unscored — running the check scores ${unscored.length === 1 ? "it" : "them"} automatically.`);
   const blockedDeadBeyondLeads = blockedDead.filter((app) => app.stage !== "Leads");
   if (blockedDeadBeyondLeads.length > 0) info.push(`${blockedDeadBeyondLeads.map((a) => `${a.company} (${a.role})`).join("; ")} ${blockedDeadBeyondLeads.length === 1 ? "is" : "are"} parked on a dead posting past the lead stage — the check leaves ${blockedDeadBeyondLeads.length === 1 ? "it" : "them"} in place.`);
-  if (blockedNoLink.length > 0) info.push(`${blockedNoLink.map((a) => `${a.company} (${a.role})`).join("; ")} ${blockedNoLink.length === 1 ? "is" : "are"} parked because no posting link is on file — once a link lands on the card, it re-queues itself automatically.`);
+  if (blockedNoLink.length > 0) info.push(`${blockedNoLink.map((a) => `${a.company} (${a.role})`).join("; ")} ${blockedNoLink.length === 1 ? "is" : "are"} parked because no posting link is on file — once a link lands on the card, it becomes queueable again on its turn.`);
   if (deadPostingLeads.length > 0) info.push(`${deadPostingLeads.length} lead${deadPostingLeads.length === 1 ? "" : "s"} sitting on a verified-dead posting (${deadPostingLeads.map((a) => a.company).join(", ")}) — running the check archives ${deadPostingLeads.length === 1 ? "it" : "them"} to Closed/Rejected automatically.`);
   if (staleLeads.length > 0) info.push(`${staleLeads.length} lead${staleLeads.length === 1 ? "" : "s"} untouched for 14+ days (${staleLeads.slice(0, 6).map((a) => a.company).join(", ")}${staleLeads.length > 6 ? `, +${staleLeads.length - 6} more` : ""}) — each carries a “stale — reverify” badge on its card.`);
   if (leadsMissingPosting.length > 0) info.push(`${leadsMissingPosting.length} lead${leadsMissingPosting.length === 1 ? "" : "s"} ha${leadsMissingPosting.length === 1 ? "s" : "ve"} no posting link yet, so auto-apply can't queue ${leadsMissingPosting.length === 1 ? "it" : "them"} until a link lands on the card.`);
@@ -1016,9 +1016,9 @@ function HealthPanel({ apps, contacts, drafts, report, running, onRun, onShowGui
  * exact order the runner works them (see compareQueueOrder /
  * listPrepQueue). Leads that aren't queued are NOT re-listed here — they
  * live once, in the Leads column below, which is sorted in the same apply
- * order. Eligible leads are queued automatically (queueEligibleLeads runs
- * when the tracker loads), so an empty queue here means there is genuinely
- * nothing queueable — and the panel says why. */
+ * order. The runner queues leads one at a time, in apply order, so the
+ * queue holds only what it is actually working through — and the panel
+ * says why when it is empty. */
 function WorkPanel({ apps, lane, secondaryPaused, autoApplyOff, onEdit }: {
   apps: Application[];
   lane: Lane;
@@ -1044,7 +1044,7 @@ function WorkPanel({ apps, lane, secondaryPaused, autoApplyOff, onEdit }: {
     <section className="work-panel" aria-label="Auto-apply: working now and up next">
       <div className="work-panel-head">
         <h2><span className="live-dot" aria-hidden="true"/> Working now &amp; up next</h2>
-        <span className="work-panel-order">Leads are queued automatically and worked one by one, in the order numbered below. Every lead is listed once — in the Leads column under this panel, in the same order.</span>
+        <span className="work-panel-order">Leads are queued one at a time and worked in the order numbered below — the runner takes the next lead only when the current one is submitted or parked. Every lead is listed once — in the Leads column under this panel, in the same order.</span>
       </div>
       {current ? (
         <div className="browser-frame">
@@ -1087,10 +1087,10 @@ function WorkPanel({ apps, lane, secondaryPaused, autoApplyOff, onEdit }: {
         <p className="work-idle">
           Queue is empty — nothing is queued right now.
           {autoApplyOff
-            ? " Auto-apply is paused in Settings, so leads aren’t being queued. Turn it back on and every eligible lead queues automatically."
+            ? " Auto-apply is paused in Settings, so leads aren’t being queued. Turn it back on and the runner queues leads one at a time, in apply order."
             : noLinkLeads.length > 0 || parkedLeads.length > 0
-              ? ` Every lead with a posting link is queued automatically when the tracker loads, so an empty queue means the remaining leads can’t be queued yet${noLinkLeads.length > 0 ? ` — ${noLinkLeads.length} lead${noLinkLeads.length === 1 ? " has" : "s have"} no posting link on file (add the link on the card and it queues itself)` : ""}${parkedLeads.length > 0 ? `${noLinkLeads.length > 0 ? ", and" : " —"} ${parkedLeads.length} lead${parkedLeads.length === 1 ? " is" : "s are"} parked on a step only you can clear (see the Leads column)` : ""}.`
-              : " Every lead with a posting link is queued automatically when the tracker loads — there are no leads waiting to be queued."}
+              ? ` The runner queues one lead at a time, so an empty queue between runs is normal — the rest of the board drains in apply order. Some leads can’t be queued yet${noLinkLeads.length > 0 ? ` — ${noLinkLeads.length} lead${noLinkLeads.length === 1 ? " has" : "s have"} no posting link on file (add the link on the card and it becomes queueable on its turn)` : ""}${parkedLeads.length > 0 ? `${noLinkLeads.length > 0 ? ", and" : " —"} ${parkedLeads.length} lead${parkedLeads.length === 1 ? " is" : "s are"} parked on a step only you can clear (see the Leads column)` : ""}.`
+              : " The runner queues one lead at a time, in apply order — there are no leads waiting to be queued."}
         </p>
       )}
       {lane === "secondary" && secondaryPaused && queued.length > 0 && <p className="queue-more">Secondary auto-apply is off in Settings, so these are paused — the runner skips them until it&rsquo;s back on.</p>}
@@ -1999,23 +1999,6 @@ export function App() {
   const [report, setReport] = useState<MaintenanceReport | null>(null);
   const [checking, setChecking] = useState(false);
   const [requestingLoginKey, setRequestingLoginKey] = useState<string | null>(null);
-
-  // Auto-queue: the user's standing expectation is that eligible leads queue
-  // themselves and get worked one by one — never an empty queue sitting
-  // next to unqueued leads. Runs once per page load (the action is
-  // idempotent and only stamps leads that were never queued), then the
-  // tracker refetches so the panel and Leads column show the real queue.
-  const autoQueuedRef = useRef(false);
-  useEffect(() => {
-    if (!tracker.data || autoQueuedRef.current) return;
-    autoQueuedRef.current = true;
-    void (async () => {
-      try {
-        const result = await api.queueEligibleLeads({});
-        if (result.queued > 0) await queryClient.invalidateQueries({ queryKey: ["tracker"] });
-      } catch { /* the panel's empty-queue copy explains the state; a failed auto-queue must not block the board */ }
-    })();
-  }, [tracker.data, queryClient]);
 
   const featLinkedin = tracker.data?.settings.feature_linkedin ?? true;
   const featOutreach = tracker.data?.settings.feature_outreach ?? true;

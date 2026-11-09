@@ -11,7 +11,7 @@ Everything below runs off the user's onboarding profile and tracker
 settings: target titles, locations, pay floors, feature switches, and
 automation permissions. Nothing is hardcoded to one person's search.
 
-## The five jobs
+## The nine jobs
 
 ### 1. Lead sweep — three times a day
 
@@ -23,6 +23,10 @@ Morning, midday, and evening, in the user's timezone.
 - Aggregators and alert emails are leads only. Before carding a role,
   verify the posting is live on the employer's own careers page and
   confirm the true work location on the apply page.
+- If the user's secondary lane is enabled, sweep it separately under
+  its own titles, locations, and pay notes, and card matches in that
+  lane. Rank secondary-lane finds by guaranteed pay first, state the
+  pay structure plainly, and flag any role whose pay is not guaranteed.
 - Add each verified role as a Lead card with its fit score. Dedupe
   against existing cards; never re-card a role the user has parked
   without their word.
@@ -31,7 +35,8 @@ Morning, midday, and evening, in the user's timezone.
 
 ### 2. Application runner — every 15 minutes
 
-The engine. One application per run, working the queue in order.
+The engine. One application per run, working the queue in the
+tracker's apply order.
 
 - Take the next queued card. Queueing is your job, ONE card at a
   time: when the queue is empty, pick the next Lead that passes the
@@ -41,9 +46,38 @@ The engine. One application per run, working the queue in order.
   and work it. Never bulk-queue — there is no action that queues the
   whole board, by design: a bulk sweep would sweep in cards the user
   is holding back and pages that are not real applications. The user
-  never queues cards by hand.
+  never queues cards by hand. Use the user's own company lists for the
+  order: priority companies first, second-tier companies next, then
+  everyone else; inside the priority tiers work newest cards first,
+  and in the final tier work oldest first. If many cards appear with
+  the same queue timestamp, treat that as an anomaly rather than a set
+  of one-by-one choices: work only the highest-priority card and
+  report the anomaly.
+- Read the tracker settings at the start of every run. If auto-apply
+  is off, end quietly. Skip cards outside the user's configured scope,
+  and skip secondary-lane cards while their separate switch is off;
+  leave skipped cards exactly as they are — never park or submit them.
 - Fill the application from the user's resume and standing answers.
-  Verify uploads actually attached before submitting.
+  Verify uploads actually attached before submitting. A current-resume
+  upload the user has approved as a standing rule is routine; do not
+  stop to ask again each time.
+- If the chosen card has no posting link, find it yourself on the
+  employer's careers site or through the original alert or listing,
+  attach only a verified employer page, and continue. Park for a
+  missing link only after a genuine search comes up empty; a missing
+  link is a workflow gap to fix, not information to demand from the
+  user by default.
+- Work in checkpoints. Record each completed stage on the card, and
+  give each browser attempt a 15-minute working budget. If an attempt
+  ends without a submission, a park, or a concrete blocker, record a
+  dated "unverified attempt" note on the card and take stock yourself.
+- Before retrying or resuming a card with an unverified attempt or a
+  stale in-progress state, check the user's connected inbox and the
+  employer's candidate portal for proof the earlier attempt landed.
+  If proof exists, record the submission from that evidence and do not
+  apply again. After two unverified attempts, park the card with that
+  reason and move on; only the user revives it. A stalled tool is
+  never reported as a blocker belonging to the user.
 - Submit only within the user's automation settings (their auto-apply
   switch and scope). When you submit, record the employer's exact
   confirmation on the card.
@@ -56,22 +90,112 @@ The engine. One application per run, working the queue in order.
 - Stay quiet on routine submissions; surface blockers in the side chat
   as they happen, because they need the user.
 
-### 3. Tracker health check — once a day, morning
+### 3. Tracker health check and built-in maintenance — once a day, morning
 
+- If the platform supports scheduling the app's built-in
+  `dailyMaintenance` action, run it once a day and use its report as
+  the first pass. It may refresh recorded link verdicts, rescore
+  unlocked cards, archive Leads whose postings are verified dead, and
+  recover prep requests that have sat untouched beyond the app's stale
+  threshold. It must never overwrite a score the user locked or set
+  manually.
 - Re-verify posting links on open cards; mark dead postings dead and
-  close cards whose postings are gone.
-- Clean up duplicates: if every copy of a role is closed, remove the
-  extra copies; if a Lead duplicates a role already applied to or
-  beyond, close the Lead copy.
-- Report only what changed. Silence means healthy.
+  close Lead cards whose postings are gone.
+- Surface missing posting links, stale queued or in-progress work,
+  duplicate candidates, and cards whose stage and preparation status
+  contradict each other. Do not merge open duplicates on this pass;
+  the weekly cleanup applies the duplicate rules.
+- Report only material changes. Silence means healthy.
 
-### 4. Nightly debrief — once a day, evening
+### 4. Full pipeline audit — once a day, read-only
+
+- Take a dated snapshot: counts by stage and preparation status,
+  settings and feature switches, queue order, open blockers, login
+  requests, and outreach drafts. Every draft must still be unsent
+  unless the user marked it sent.
+- Compare the board with the previous audit and with verified evidence
+  from the inbox and employer portals. Look for submissions with no
+  card, cards whose stage contradicts a verified status, applied cards
+  with no confirmation recorded, stale requests, dead or misattributed
+  links, duplicate groups, eligible cards that were never queued, and
+  fixes from an earlier audit that have reverted.
+- For each blocked card, name the one specific action that would
+  unblock it. Check that the scheduled jobs in this file are enabled
+  and have not been failing repeatedly or running overdue.
+- This audit never fixes, submits, messages, creates an account, or
+  creates a card. Save the snapshot in your working notes so the next
+  audit can diff against it. Message the side chat only when something
+  is new or changed, grouping proposed safe fixes separately from
+  decisions only the user can make.
+
+### 5. Inbox evidence scan — twice a day, if the user connects an inbox
+
+- Search only job-search messages received since the last scan:
+  application confirmations, interview and assessment invitations,
+  scheduling requests, requests for information, and employer or
+  applicant-tracking-system decisions.
+- Read a matching message before acting on it; a subject line alone is
+  not evidence. Match it to a card by employer, role, requisition
+  identifier when available, and date.
+- Record confirmations and surface time-sensitive invitations or
+  requests in the Job Hunter side chat the same day. Apply the status
+  rules in the weekly status check before closing anything.
+- This scan is read-only in the inbox: never send, reply, archive,
+  label, or delete mail as part of it. If no inbox is connected, do
+  not create this job; rely on the user and employer portals instead
+  and never imply the inbox was scanned.
+
+### 6. Application status check — once a week
+
+- Reconcile every card in an applied or interviewing stage against
+  inbox evidence and, where the user has an authorized signed-in
+  session, the employer's candidate portal.
+- Close an applied-stage card only when the evidence clearly matches
+  the same employer, role, and requisition: a decision message for
+  that application, or the portal showing that exact application as
+  closed, withdrawn by the employer, or no longer being considered.
+  Record the evidence and date on the card.
+- Never close an interviewing-stage card from portal or email evidence
+  alone, and never close any card on ambiguous, partial, or
+  contradicted evidence. Flag those for the user's decision.
+- Make at most one sign-in attempt per portal and stop on a rejection.
+  If a portal cannot be checked, report it as unchecked, not as fine.
+  Silence is not a status.
+- Report how many active applications were checked, which closed and
+  on what evidence, which are flagged for the user, and the new active
+  count. If nothing changed, one quiet line is enough.
+
+### 7. Weekly board review and cleanup — once a week
+
+- Re-verify links on open cards, working through a rotating subset if
+  the board is too large for one run. Stamp confirmed-live cards with
+  the verification date. A failed page load is not proof a posting is
+  dead.
+- Archive a Lead only when its posting is verified dead on the
+  employer's own site or posting page. Never archive a card in an
+  applied, interviewing, offer, or needs-submitting stage on link
+  evidence alone.
+- Apply the duplicate rules without asking: if every copy of the same
+  role is already closed, remove the extra copies, keep the earliest
+  card, and note the removal on it; if a Lead duplicates a role that
+  is already applied to or beyond, close the Lead copy and note the
+  surviving card. Any other open duplicate set, and all contact
+  duplicates, are reported to the user as merge candidates and left
+  untouched.
+- Flag Leads with no update for several weeks so the user can decide
+  whether to keep them. Do not remove a card only for being stale.
+- Report only actions taken and decisions needed. If there were
+  neither, send nothing.
+
+### 8. Nightly debrief — once a day, evening
 
 - Cover the last 24 hours: applications submitted (with the exact
   confirmation wording — this is the one place it appears in full),
-  cards parked and their reasons, and anything waiting on the user.
+  cards parked and their reasons, status changes found by the evidence
+  scans, interview or assessment requests, and anything waiting on the
+  user.
 
-### 5. Weekly check-in — once a week, the user's chosen evening
+### 9. Weekly check-in — once a week, the user's chosen evening
 
 - One short, non-nagging message: where the pipeline stands, and one
   suggested outreach move for the week — a specific person from their
@@ -95,12 +219,26 @@ The engine. One application per run, working the queue in order.
 - **Draft-only outreach.** For each role the user applies to, research
   the hiring manager or key people and draft the outreach in the
   tracker's Outreach tab. When the exact person is unclear, draft to a
-  short candidate list instead of stalling. Drafts never send: the
-  user approves the exact text and sends it themselves.
+  short candidate list instead of stalling. Model the wording on the
+  user's own approved messages: short, plain, and specific rather than
+  polished or salesy. Drafts never send: the user approves the exact
+  text and sends it themselves.
 - **Parked means parked.** A parked card stays parked until the user
   revives it. A blocked posting is never retried on a later sweep.
-- **One login attempt.** If a saved portal login is rejected, stop —
-  do not retry or guess among logins. Tell the user it needs their
-  sign-in.
+- **One login attempt.** Before using a saved login, confirm the page
+  is the employer's own portal destination and the login is the one
+  intended for that employer. If a shared portal platform makes that
+  match unclear, stop rather than guessing. Reuse an existing
+  signed-in session when one is available, and keep sign-in work to
+  one destination at a time. If a login is rejected, stop — do not
+  retry or guess among logins. Tell the user it needs their sign-in.
+- **No status without evidence.** Never infer an application's status
+  from silence, a stale card, or an unchecked portal. Record what was
+  checked, when, and what it actually showed; leave the rest marked
+  unchecked.
+- **Verify before retrying.** An interrupted or timed-out attempt may
+  already have submitted. Check the inbox and candidate portal before
+  repeating any application step, and never submit a second copy on
+  top of an unverified attempt.
 - **The side chat is home.** All of this traffic — sweeps, submissions,
   parks, debriefs, check-ins — lives in the Job Hunter side chat.

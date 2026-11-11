@@ -171,6 +171,8 @@ const settingsRow = z.object({
   auto_apply_role_types: z.array(z.string()),
   auto_apply_scope_notes: z.string(),
   auto_apply_states: z.array(z.string()),
+  pace_mode: z.enum(["human", "full_speed"]),
+  theme: z.enum(["current", "light", "dark"]),
   feature_linkedin: z.boolean(),
   feature_email_alerts: z.boolean(),
   feature_outreach: z.boolean(),
@@ -596,6 +598,8 @@ export const Actions = {
           auto_apply_role_types: parseStringArray(settings?.autoApplyRoleTypes, ["*"]),
           auto_apply_scope_notes: settings?.autoApplyScopeNotes ?? "",
           auto_apply_states: parseStringArrayAllowEmpty(settings?.autoApplyStates, []),
+          pace_mode: settings?.paceMode === "full_speed" ? "full_speed" : "human",
+          theme: settings?.theme === "light" || settings?.theme === "dark" ? settings.theme : "current",
         },
         login_requests: loginRows.map((row) => ({
           portal_key: row.portalKey,
@@ -1056,6 +1060,8 @@ export const Actions = {
       auto_apply_role_types: z.array(z.string().trim().min(1).max(80)).max(20).optional(),
       auto_apply_scope_notes: z.string().trim().max(4000).optional(),
       auto_apply_states: z.array(z.string().trim().min(2).max(2)).max(60).optional(),
+      pace_mode: z.enum(["human", "full_speed"]).optional(),
+      theme: z.enum(["current", "light", "dark"]).optional(),
     }),
     response: okResponse,
     async handler(ctx, args): Promise<z.infer<typeof okResponse>> {
@@ -1075,6 +1081,8 @@ export const Actions = {
         autoApplyRoleTypes: args.auto_apply_role_types !== undefined ? JSON.stringify(args.auto_apply_role_types) : (existing?.autoApplyRoleTypes ?? '["*"]'),
         autoApplyScopeNotes: args.auto_apply_scope_notes !== undefined ? args.auto_apply_scope_notes : (existing?.autoApplyScopeNotes ?? ""),
         autoApplyStates: args.auto_apply_states !== undefined ? JSON.stringify(args.auto_apply_states.map((s) => s.toUpperCase())) : (existing?.autoApplyStates ?? '[]'),
+        paceMode: args.pace_mode !== undefined ? args.pace_mode : (existing?.paceMode ?? "human"),
+        theme: args.theme !== undefined ? args.theme : (existing?.theme ?? "current"),
         updatedAt: now,
       };
       if (existing) {

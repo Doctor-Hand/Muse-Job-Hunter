@@ -73,6 +73,8 @@ CREATE TABLE tracker_settings (
   auto_apply_role_types TEXT DEFAULT '["*"]' NOT NULL,
   auto_apply_scope_notes TEXT DEFAULT '' NOT NULL,
   auto_apply_states TEXT DEFAULT '[]' NOT NULL,
+  pace_mode TEXT DEFAULT 'human' NOT NULL,
+  theme TEXT DEFAULT 'current' NOT NULL,
   feature_linkedin INTEGER DEFAULT 1 NOT NULL,
   feature_email_alerts INTEGER DEFAULT 1 NOT NULL,
   feature_outreach INTEGER DEFAULT 1 NOT NULL,

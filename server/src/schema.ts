@@ -59,6 +59,8 @@ export const trackerSettings = sqliteTable("tracker_settings", {
   autoApplyRoleTypes: text("auto_apply_role_types").notNull().default('["*"]'),
   autoApplyScopeNotes: text("auto_apply_scope_notes").notNull().default(""),
   autoApplyStates: text("auto_apply_states").notNull().default('[]'),
+  paceMode: text("pace_mode").notNull().default("human"),
+  theme: text("theme").notNull().default("current"),
   featureLinkedin: integer("feature_linkedin").notNull().default(1),
   featureEmailAlerts: integer("feature_email_alerts").notNull().default(1),
   featureOutreach: integer("feature_outreach").notNull().default(1),

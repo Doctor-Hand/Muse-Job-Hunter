@@ -57,6 +57,14 @@ tracker's apply order.
   is off, end quietly. Skip cards outside the user's configured scope,
   and skip secondary-lane cards while their separate switch is off;
   leave skipped cards exactly as they are — never park or submit them.
+- Honor the Submission pace setting (Settings -> Submission pace) on
+  every run. "human" (the default): work at a deliberate, human-like
+  pace while filling and submitting forms. "full_speed": work
+  applications back-to-back with no pacing delays. The pace setting
+  changes speed only — the accuracy rules never change with it: one
+  card at a time, verify before submit, and the park rules (account
+  creation, CAPTCHA, verification codes, ungranted consent) still stop
+  the run.
 - Fill the application from the user's resume and standing answers.
   Verify uploads actually attached before submitting. A current-resume
   upload the user has approved as a standing rule is routine; do not

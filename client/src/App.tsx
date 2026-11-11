@@ -1798,7 +1798,7 @@ type TrackerSettings = TrackerData["settings"];
 function SettingsView({ settings, applications, onUpdate }: {
   settings: TrackerSettings;
   applications: Application[];
-  onUpdate: (partial: Partial<{ auto_apply_enabled: boolean; auto_apply_secondary_enabled: boolean; auto_apply_companies: string[]; auto_apply_role_types: string[]; auto_apply_states: string[]; auto_apply_scope_notes: string; feature_linkedin: boolean; feature_email_alerts: boolean; feature_outreach: boolean; feature_fit_scoring: boolean; feature_secondary_lane: boolean }>) => void;
+  onUpdate: (partial: Partial<{ auto_apply_enabled: boolean; auto_apply_secondary_enabled: boolean; auto_apply_companies: string[]; auto_apply_role_types: string[]; auto_apply_states: string[]; auto_apply_scope_notes: string; feature_linkedin: boolean; feature_email_alerts: boolean; feature_outreach: boolean; feature_fit_scoring: boolean; feature_secondary_lane: boolean; pace_mode: "human" | "full_speed"; theme: "current" | "light" | "dark" }>) => void;
 }) {
   const [scopeDraft, setScopeDraft] = useState(settings.auto_apply_scope_notes ?? "");
   const [scopeSaved, setScopeSaved] = useState(false);
@@ -1857,6 +1857,33 @@ function SettingsView({ settings, applications, onUpdate }: {
         <button type="button" className="settings-onetap" onClick={() => onUpdate({ auto_apply_enabled: !settings.auto_apply_enabled })} aria-label={settings.auto_apply_enabled ? "Turn off automatic applications" : "Turn on automatic applications"}>
           {settings.auto_apply_enabled ? "Turn off auto-apply" : "Turn on auto-apply"}
         </button>
+      </div>
+
+      <div className="settings-card">
+        <div className="settings-card-head">
+          <div>
+            <p className="settings-title">Submission pace</p>
+            <p className="settings-desc">{settings.pace_mode === "full_speed" ? "Full speed — the runner works applications back-to-back with no pacing delays. Fastest throughput; speed and volume are the signals employer portals are most likely to notice." : "Human pace — the runner works at a deliberate, human-like pace while filling and submitting forms. Slower, and gentler on employer portals."} Either way the accuracy rules never change: one card at a time, verify before submit, and the park rules (account creation, CAPTCHA, verification codes, consent) still stop the runner.</p>
+          </div>
+        </div>
+        <div className="seg-toggle" role="group" aria-label="Submission pace">
+          <button type="button" className={`seg-option ${settings.pace_mode !== "full_speed" ? "active" : ""}`} aria-pressed={settings.pace_mode !== "full_speed"} onClick={() => onUpdate({ pace_mode: "human" })}>Human pace</button>
+          <button type="button" className={`seg-option ${settings.pace_mode === "full_speed" ? "active" : ""}`} aria-pressed={settings.pace_mode === "full_speed"} onClick={() => onUpdate({ pace_mode: "full_speed" })}>Full speed</button>
+        </div>
+      </div>
+
+      <div className="settings-card">
+        <div className="settings-card-head">
+          <div>
+            <p className="settings-title">Theme</p>
+            <p className="settings-desc">Three liquid glass themes — translucent surfaces with a soft blur and highlight. Current keeps this board&rsquo;s colors with the glass treatment; Light and Dark restyle the whole board. Applies everywhere and saves with one tap.</p>
+          </div>
+        </div>
+        <div className="seg-toggle" role="group" aria-label="Theme">
+          <button type="button" className={`seg-option ${(settings.theme ?? "current") === "current" ? "active" : ""}`} aria-pressed={(settings.theme ?? "current") === "current"} onClick={() => onUpdate({ theme: "current" })}>Current</button>
+          <button type="button" className={`seg-option ${settings.theme === "light" ? "active" : ""}`} aria-pressed={settings.theme === "light"} onClick={() => onUpdate({ theme: "light" })}>Light</button>
+          <button type="button" className={`seg-option ${settings.theme === "dark" ? "active" : ""}`} aria-pressed={settings.theme === "dark"} onClick={() => onUpdate({ theme: "dark" })}>Dark</button>
+        </div>
       </div>
 
       <div className="settings-card">
@@ -2121,7 +2148,7 @@ export function App() {
       window.setTimeout(() => setCopiedId((current) => (current === draft.id ? null : current)), 4000);
     } catch { setError("Copy did not work here. Open Edit and copy the text manually."); }
   }
-  async function updateSettings(partial: Partial<{ auto_apply_enabled: boolean; auto_apply_secondary_enabled: boolean; auto_apply_companies: string[]; auto_apply_role_types: string[]; auto_apply_states: string[]; auto_apply_scope_notes: string; feature_linkedin: boolean; feature_email_alerts: boolean; feature_outreach: boolean; feature_fit_scoring: boolean; feature_secondary_lane: boolean }>) {
+  async function updateSettings(partial: Partial<{ auto_apply_enabled: boolean; auto_apply_secondary_enabled: boolean; auto_apply_companies: string[]; auto_apply_role_types: string[]; auto_apply_states: string[]; auto_apply_scope_notes: string; feature_linkedin: boolean; feature_email_alerts: boolean; feature_outreach: boolean; feature_fit_scoring: boolean; feature_secondary_lane: boolean; pace_mode: "human" | "full_speed"; theme: "current" | "light" | "dark" }>) {
     setError("");
     try { await api.updateSettings(partial); await refresh(); }
     catch { setError("That setting could not be saved. Try again."); }
@@ -2196,7 +2223,7 @@ export function App() {
 
   return (
     <FeaturesContext.Provider value={{ linkedin: featLinkedin, fit: featFit }}>
-    <div className="app-shell">
+    <div className="app-shell" data-theme={tracker.data?.settings.theme ?? "current"}>
       <SafeAreaTopScrim backgroundColor="var(--bg)" />
       <main>
         <div className="workspace-head">

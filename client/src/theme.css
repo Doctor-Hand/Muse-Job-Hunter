@@ -740,3 +740,79 @@ body { background: var(--bg); }
 .onboarding-nav button { border: 1px solid var(--accent); background: var(--accent); color: #fff; border-radius: 10px; padding: 11px 18px; font-weight: 800; cursor: pointer; }
 .onboarding-nav button:first-child { background: transparent; color: var(--dim); border-color: var(--border); }
 .onboarding-nav button:disabled { opacity: .45; cursor: not-allowed; }
+/* ---------- Liquid glass themes (Settings -> Theme) ---------- */
+/* All three themes share the glass treatment: translucent surfaces, a soft
+   backdrop blur, and a specular top highlight. "current" keeps the board's
+   own colors; "light" and "dark" override the palette on the app shell. */
+.app-shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(900px 520px at 12% -5%, color-mix(in srgb, var(--accent) 13%, transparent), transparent 60%),
+    radial-gradient(820px 500px at 92% 0%, color-mix(in srgb, var(--neon-purple) 11%, transparent), transparent 60%),
+    var(--bg);
+}
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #edf0f8;
+  --surface: #ffffff;
+  --surface-2: #e4e9f6;
+  --text: #141a2c;
+  --dim: #5a6480;
+  --border: #c3cde6;
+  --accent: #0090b4;
+  --accent-ink: #ffffff;
+  --signal: #0090b4;
+  --neon-cyan: #0090b4;
+  --neon-purple: #7a4de8;
+  --amber: #b97a12;
+  --amber-soft: #f7ead0;
+  --danger: #d81b4c;
+}
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0a0c11;
+  --surface: #151922;
+  --surface-2: #1e242f;
+  --text: #e9edf5;
+  --dim: #99a3b7;
+  --border: #2b3342;
+  --accent: #4da3ff;
+  --accent-ink: #07182b;
+  --signal: #4da3ff;
+  --neon-cyan: #4da3ff;
+  --neon-purple: #8f6bff;
+  --amber: #ffb340;
+  --amber-soft: #2e2410;
+  --danger: #ff5c7a;
+}
+.stat-chip, .spotlight, .job-card, .archive, .contact-card, .health-panel,
+.policy-item, .draft-card, .settings-card, .login-card, .work-panel, .sheet {
+  background: color-mix(in srgb, var(--surface) 74%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .28), inset 0 1px 0 color-mix(in srgb, #ffffff 16%, transparent);
+}
+[data-theme="light"] .stat-chip, [data-theme="light"] .spotlight, [data-theme="light"] .job-card,
+[data-theme="light"] .archive, [data-theme="light"] .contact-card, [data-theme="light"] .health-panel,
+[data-theme="light"] .policy-item, [data-theme="light"] .draft-card, [data-theme="light"] .settings-card,
+[data-theme="light"] .login-card, [data-theme="light"] .work-panel, [data-theme="light"] .sheet {
+  box-shadow: 0 8px 28px rgba(31, 41, 77, .14), inset 0 1px 0 rgba(255, 255, 255, .65);
+}
+
+/* ---------- Segmented option toggle (Settings: pace, theme) ---------- */
+.seg-toggle {
+  display: inline-flex; gap: 4px; padding: 4px; margin-top: 12px;
+  border: 1px solid var(--border); border-radius: 999px;
+  background: color-mix(in srgb, var(--surface-2) 68%, transparent);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  backdrop-filter: blur(12px) saturate(150%);
+}
+.seg-option {
+  border: 0; border-radius: 999px; padding: 7px 18px;
+  font: inherit; font-size: 13px; font-weight: 700;
+  color: var(--dim); background: transparent; cursor: pointer;
+}
+.seg-option.active {
+  color: var(--accent-ink); background: var(--accent);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .30), inset 0 1px 0 rgba(255, 255, 255, .35);
+}

@@ -35,8 +35,13 @@ Morning, midday, and evening, in the user's timezone.
 
 ### 2. Application runner — every 15 minutes
 
-The engine. One application per run, working the queue in the
-tracker's apply order.
+The engine. A run works the queue in the tracker's apply order and
+keeps rolling: when it finishes one application it immediately
+takes the next, draining the queue back-to-back until nothing
+eligible remains or the run's time budget (about 50 minutes) is
+reached — one card at a time, never two in parallel. The 15-minute
+schedule is only the wake-up; there is no waiting between
+applications inside a run.
 
 - Take the next queued card. Queueing is your job, ONE card at a
   time: when the queue is empty, pick the next Lead that passes the
@@ -112,7 +117,9 @@ never submits applications and never sends anything.
   cards submitted within the last 14 days that have no outreach
   draft and no recorded research outcome, so submissions made by
   hand or before this split existed are still covered.
-- Work one card per run, oldest submission first.
+- Work one card at a time, oldest submission first, and keep
+  rolling through the pending list until it is empty or the run's
+  time budget is reached.
 - Before doing any research, check the tracker's drafts by
   application: if a draft already exists for that application —
   including one created manually in a chat or by another authorized

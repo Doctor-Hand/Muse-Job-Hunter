@@ -11,7 +11,7 @@ Everything below runs off the user's onboarding profile and tracker
 settings: target titles, locations, pay floors, feature switches, and
 automation permissions. Nothing is hardcoded to one person's search.
 
-## The nine jobs
+## The ten jobs
 
 ### 1. Lead sweep — three times a day
 
@@ -88,7 +88,10 @@ tracker's apply order.
   never reported as a blocker belonging to the user.
 - Submit only within the user's automation settings (their auto-apply
   switch and scope). When you submit, record the employer's exact
-  confirmation on the card.
+  confirmation on the card, mark the card outreach-pending, and end
+  the run. Do NOT research people or draft outreach in this job — a
+  separate outreach agent (job 3) owns that work, so research never
+  delays the next application.
 - **Park, don't guess.** If a step needs the user, park the card with a
   one-line reason and move to the next card. Always park on: account
   creation (never create a candidate account without asking), a
@@ -98,7 +101,46 @@ tracker's apply order.
 - Stay quiet on routine submissions; surface blockers in the side chat
   as they happen, because they need the user.
 
-### 3. Tracker health check and built-in maintenance — once a day, morning
+### 3. Outreach research runner — every 15 minutes
+
+A separate agent from the application runner. Its only job is
+post-submission people research and outreach draft creation; it
+never submits applications and never sends anything.
+
+- Build the work list from cards in an applied stage that the
+  application runner marked outreach-pending. Also sweep applied
+  cards submitted within the last 14 days that have no outreach
+  draft and no recorded research outcome, so submissions made by
+  hand or before this split existed are still covered.
+- Work one card per run, oldest submission first.
+- Before doing any research, check the tracker's drafts by
+  application: if a draft already exists for that application —
+  including one created manually in a chat or by another authorized
+  workflow — skip the card, clear the outreach-pending marker, and
+  record that it was already covered. Never create a second draft
+  for the same application.
+- Research who runs the role's territory or division, from public
+  sources you can actually open first, then the user's authorized
+  professional-network session if needed. Verify every person's
+  profile link from a page you actually opened. Research only:
+  never connect, follow, message, or send anything.
+- Create exactly one draft in the tracker's Outreach tab: a
+  single-recipient draft when one person is a confident match, or
+  a short candidate list — each person labeled with their title and
+  a confidence note — when the exact manager is unclear. Model the
+  wording on the user's own approved messages.
+- If no plausible person can be found, create no draft. Record a
+  dated "outreach research needed" outcome on the card instead and
+  clear the pending marker, so the card is not retried every run;
+  the daily audit surfaces unresolved research.
+- When finished, record the people found and the draft or outcome
+  on the card, clear the outreach-pending marker, and re-check that
+  exactly one outcome exists for that application.
+- Stay quiet on routine work. Surface only hard blockers that need
+  the user, such as a professional-network sign-in that no longer
+  works.
+
+### 4. Tracker health check and built-in maintenance — once a day, morning
 
 - If the platform supports scheduling the app's built-in
   `dailyMaintenance` action, run it once a day and use its report as
@@ -115,18 +157,26 @@ tracker's apply order.
   the weekly cleanup applies the duplicate rules.
 - Report only material changes. Silence means healthy.
 
-### 4. Full pipeline audit — once a day, read-only
+### 5. Full pipeline audit — once a day, read-only
 
 - Take a dated snapshot: counts by stage and preparation status,
   settings and feature switches, queue order, open blockers, login
-  requests, and outreach drafts. Every draft must still be unsent
-  unless the user marked it sent.
+  requests, outreach-pending cards, and outreach drafts. Every draft
+  must still be unsent unless the user marked it sent.
 - Compare the board with the previous audit and with verified evidence
   from the inbox and employer portals. Look for submissions with no
   card, cards whose stage contradicts a verified status, applied cards
   with no confirmation recorded, stale requests, dead or misattributed
   links, duplicate groups, eligible cards that were never queued, and
   fixes from an earlier audit that have reverted.
+- Check the application-to-outreach handoff specifically: applied
+  cards still marked outreach-pending long after submission, more
+  than one outreach draft for the same application, drafts with no
+  application attached, outreach-pending markers on cards that are
+  not in an applied stage, and recent applied cards with neither a
+  draft nor a recorded research outcome. Confirm the application
+  runner's instructions still leave research to the outreach runner,
+  and that the outreach runner itself is enabled and not failing.
 - For each blocked card, name the one specific action that would
   unblock it. Check that the scheduled jobs in this file are enabled
   and have not been failing repeatedly or running overdue.
@@ -136,7 +186,7 @@ tracker's apply order.
   is new or changed, grouping proposed safe fixes separately from
   decisions only the user can make.
 
-### 5. Inbox evidence scan — twice a day, if the user connects an inbox
+### 6. Inbox evidence scan — twice a day, if the user connects an inbox
 
 - Search only job-search messages received since the last scan:
   application confirmations, interview and assessment invitations,
@@ -153,7 +203,7 @@ tracker's apply order.
   not create this job; rely on the user and employer portals instead
   and never imply the inbox was scanned.
 
-### 6. Application status check — once a week
+### 7. Application status check — once a week
 
 - Reconcile every card in an applied or interviewing stage against
   inbox evidence and, where the user has an authorized signed-in
@@ -173,7 +223,7 @@ tracker's apply order.
   on what evidence, which are flagged for the user, and the new active
   count. If nothing changed, one quiet line is enough.
 
-### 7. Weekly board review and cleanup — once a week
+### 8. Weekly board review and cleanup — once a week
 
 - Re-verify links on open cards, working through a rotating subset if
   the board is too large for one run. Stamp confirmed-live cards with
@@ -195,15 +245,16 @@ tracker's apply order.
 - Report only actions taken and decisions needed. If there were
   neither, send nothing.
 
-### 8. Nightly debrief — once a day, evening
+### 9. Nightly debrief — once a day, evening
 
 - Cover the last 24 hours: applications submitted (with the exact
   confirmation wording — this is the one place it appears in full),
-  cards parked and their reasons, status changes found by the evidence
-  scans, interview or assessment requests, and anything waiting on the
-  user.
+  outreach drafts created by the outreach runner and any applications
+  still waiting on outreach research, cards parked and their reasons,
+  status changes found by the evidence scans, interview or assessment
+  requests, and anything waiting on the user.
 
-### 9. Weekly check-in — once a week, the user's chosen evening
+### 10. Weekly check-in — once a week, the user's chosen evening
 
 - One short, non-nagging message: where the pipeline stands, and one
   suggested outreach move for the week — a specific person from their
@@ -224,13 +275,20 @@ tracker's apply order.
   user's recorded consent get checked; any new consent question parks
   until the user rules on it. Their ruling becomes the standing rule
   for that question.
-- **Draft-only outreach.** For each role the user applies to, research
-  the hiring manager or key people and draft the outreach in the
-  tracker's Outreach tab. When the exact person is unclear, draft to a
-  short candidate list instead of stalling. Model the wording on the
-  user's own approved messages: short, plain, and specific rather than
-  polished or salesy. Drafts never send: the user approves the exact
-  text and sends it themselves.
+- **Separate, draft-only outreach.** The application runner never
+  does people research. Once it records a submission, it marks the
+  application outreach-pending and ends; the separate outreach
+  runner (job 3) picks it up so submissions never wait on research.
+  Before researching, the outreach runner checks the drafts by
+  application and skips any application that already has a draft —
+  including drafts created manually by the user or their Muse — so
+  each application gets exactly one outreach outcome: one draft, or
+  a dated "outreach research needed" note when no plausible person
+  is found. When the exact person is unclear, draft to a short
+  candidate list instead of stalling. Model the wording on the
+  user's own approved messages: short, plain, and specific rather
+  than polished or salesy. Drafts never send: the user approves the
+  exact text and sends it themselves.
 - **Parked means parked.** A parked card stays parked until the user
   revives it. A blocked posting is never retried on a later sweep.
 - **One login attempt.** Before using a saved login, confirm the page
